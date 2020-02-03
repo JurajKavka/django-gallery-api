@@ -42,9 +42,17 @@ To run this project without docker You will need to have installed:
 
 In `src/` subdirectory directory (where you see `Pipfile`) run command:
 
-```shell
+```bash
+# install dependencies
 pipenv --three install
+
+# run database migrations
+pipenv run python manage.py migrate
+
+# create default admin user
+pipenv run python manage.py create_default_superuser --username admin --password admin
 ```
+
 
 Now, you need to run local development server with
 
