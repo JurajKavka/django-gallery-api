@@ -36,9 +36,9 @@ make clean
 ### The pure Python way (without Docker)
 To run this project without docker You will need to have installed:
 
-- python 3
-- [`pipenv`](https://github.com/pypa/pipenv)
-- sqlite 3
+- python v.3
+- [pipenv](https://github.com/pypa/pipenv)
+- sqlite v.3
 
 In `src/` subdirectory directory (where you see `Pipfile`) run command:
 
@@ -71,7 +71,7 @@ In a nutshell:
 
 - `/gallery` - list of the galleries or create one, providing `name` in request body
 - `/gallery/{path}` - detail of the gallery with all the images. `POST` method to this endpoint is used to upload images to selected gallery. You can upload several images in one request. `DELETE` method deletes gallery with all the images and generated thumbnails. When you use `fullpath` of the image as a `path` parameter of this request, server returns original image. `DELETE` method combined with `fullpath` of the image removes image from gallery.
-- `images/{x_size}x{y_size}/{gallery_path}/{image_path}/` - returns resized image. Image is defined by `{gallery_path}/{image_path}`, but it is same as a `fullpath` attribude from the detail of image. The resizing method does not maintain aspect ratio, only when one of the `size` parameter is `0`.
+- `images/{x_size}x{y_size}/{gallery_path}/{image_path}` - returns resized image. Image is defined by `{gallery_path}/{image_path}`, but it is same as a `fullpath` attribude from the detail of image. The resizing method does not maintain aspect ratio, only when one of the `size` parameter is `0`.
 
 You can also try those links from browser, for example:
 
@@ -82,9 +82,9 @@ Django REST framework will render its own views for those endpoints.
 > **NOTE: API endpoints are not authorized! Authentication and authorization is explicitely disabled for the simplicity of project presentation!**
 
 ### Administration from backend (Django Admin)
-This Django project comes with prepopulated sqlite database in file `src/db.sqlite3`. This allows without any special effort run the project and use. You can administrace application from standard Django admin on url `http://localhost:8000/admin`. 
+You can reach Django admin backed on url [`http://localhost:8000/admin`](http://localhost:8000/admin)
 
 Default superuser is:
 
 - name: `admin`
-- password:`admin123`
+- password:`admin`
