@@ -23,14 +23,24 @@ Building the image takes quite a long time. When the container is running, local
 ### Docker
 If you don't have `docker-compose`, you can use standard Docker command to build image and run container. Those commands are part of `Makefile`.
 
-```shell
+```bash
+# build image
 make build
-make run
-```
 
-Clean container and image with
-```shell
-make clean
+# run container based on bulded image
+make run
+
+# stop running container
+make stop
+
+# start existing container
+make start
+
+# remove container
+make rm
+
+# remove image
+make rm-image
 ```
 
 ### The pure Python way (without Docker)
