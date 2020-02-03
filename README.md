@@ -21,13 +21,13 @@ docker-compose up
 Building the image takes quite a long time. When the container is running, local server is listening on port `8000` and app is accessible on [`http://localhost:8000`](http://localhost:8000).
 
 ### Docker
-If you don't have `docker-compose`, you can use standard Docker command to build image and run container. Those commands are part of `Makefile`.
+If you don't have `docker-compose`, you can use standard Docker commands to build image and run container. Those commands are part of `Makefile`.
 
 ```bash
 # build image
 make build
 
-# run container based on bulded image
+# run container based on builded image
 make run
 
 # stop running container
@@ -87,7 +87,7 @@ You can also try those links from browser, for example:
 
 - `http://localhost:8000/gallery`
 
-Django REST framework will render its own views for those endpoints.
+Django REST framework will render its own views for the endpoints.
 
 > **NOTE: API endpoints are not authorized! Authentication and authorization is explicitely disabled for the simplicity of project presentation!**
 
