@@ -1,0 +1,9 @@
+from .settings import *  # noqa
+
+
+# FACEBOOK_APP_ID = '2476195625968105'
+FACEBOOK_APP_ID = '1053174974861205'
+FACEBOOK_CLIENT_SECRET = '88078cb8aba31559207065920ac3e016'
+
+# FACEBOOK_REDIRECT_URI = 'https://1413d4c3.ngrok.io/fb-oauth/'
+FACEBOOK_REDIRECT_URI = 'https://localhost/token'

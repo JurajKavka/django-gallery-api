@@ -2,6 +2,8 @@ import logging
 import os
 from django.http import FileResponse
 from rest_framework import status
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.exceptions import APIException, NotFound
 from rest_framework.response import Response
@@ -10,6 +12,7 @@ from .serializers import (
     GallerySerializer, GalleryDetailSerializer, ImageUploadSerializer,
     ImagePreviewSerializer
 )
+from .simple_fb_auth import SimpleFbAuthentication, IsFbAuthenticated
 
 
 logger = logging.getLogger(__name__)
@@ -42,11 +45,12 @@ def get_image(gallery_path, image_path):
 
 
 @api_view(['GET', 'POST'])
-@authentication_classes([])
-@permission_classes([])
+@authentication_classes([SimpleFbAuthentication])
+@permission_classes([IsFbAuthenticated])
 def gallery_list_view(request):
 
     if request.method == 'GET':
+        logger.debug('loggggg')
         galleries = Gallery.objects.all()
         serializer = GallerySerializer(galleries, many=True)
         return Response(serializer.data)

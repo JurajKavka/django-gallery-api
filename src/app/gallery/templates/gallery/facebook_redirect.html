@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Facebook OAuth response</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- bootstrap vue -->
+  <!-- Load required Bootstrap and BootstrapVue CSS -->
+  <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+  <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+
+  <!-- Load polyfills to support older browsers -->
+  <script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>
+
+  <!-- Load Vue followed by BootstrapVue -->
+  <script src="//unpkg.com/vue@latest/dist/vue.min.js"></script>
+  <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+
+  <!-- Load the following for BootstrapVueIcons support -->
+  <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
+
+  <style>
+    body {
+      padding-top: 25px;
+    }
+    pre {
+      background-color: #dfdfdf; 
+      padding: 5px;
+    }
+  </style
+
+</head>
+<body>
+  <div id="app">
+    <b-container>
+      <b-row>
+        <b-col>
+          <b-alert show>Use "Access token" in you next API calls in
+            <code>Authorization</code> header as a <code>Bearer</code> token.<br>
+            For example:<br>
+            <code>Authorization=Bearer EAAjMFjiuIekBAG5QQattzBlLpZA...bAZDZD</code>
+          </b-alert>
+          <p>
+          <strong>Access token:</strong>
+          <pre>Bearer <% token.access_token %></pre>
+          </p>
+          <p>
+          <strong>Data access exiration time:</strong>
+          <pre><% token.data_access_expiration_time %></pre>
+          </p>
+          <p>
+          <strong>Expires in:</strong>
+          <pre><% token.expires_in %></pre>
+          </p>
+        </b-col>
+      </b-row>
+    </b-container>
+  </div>
+  <script>
+
+    Vue.use(BootstrapVue);
+
+    var app = new Vue({
+      el: '#app',
+      data: function() {
+        return {
+          token: {
+            access_token: undefined,
+            data_access_expiration_time: undefined,
+            expires_in: undefined,
+            state: undefined
+          }
+        }
+      },
+      delimiters: ['<%' , '%>'],
+      created () {
+      },
+      mounted () {
+        this.parseHashUrl()
+      },
+      methods: {
+        /**
+         * Cleans query param from possible existing `#` or `?`i tag at the
+         * begining of the string.
+         *
+         * Returns object { queryParamName: value }.
+         */
+        cleanQueryParam: function(queryParam) {
+          let tmp = undefined;
+          let splitted = undefined;
+          let result = {};
+
+          if (queryParam[0] == '#' || queryParam[0] == '?') {
+            tmp = queryParam.substring(1);
+          } else {
+            tmp = queryParam;
+          }
+
+          splitted = tmp.split('=');
+          if (splitted.length > 0) {
+            result[splitted[0]] = undefined;
+          }
+
+          if (splitted.length > 1) {
+            result[splitted[0]] = splitted[1];
+          }
+
+          return result;
+        },
+
+        parseHashUrl: function () {
+
+          let hash = window.location.hash || window.location.search;
+
+          if (hash !== undefined || hash !== ""){
+            let splitted = hash.split('&');
+            if (splitted !== undefined && splitted.length > 0) {
+              for(let item of splitted){
+                Object.assign(this.token, this.cleanQueryParam(item));
+              }
+            }
+          }
+        }
+      }
+    })
+  </script>
+</body>
+</html>
