@@ -35,7 +35,7 @@
     <b-container>
       <b-row>
         <b-col>
-          <b-alert show>Use "Access token" in you next API calls in
+          <b-alert show>Use "Access token" in your next API calls in
             <code>Authorization</code> header as a <code>Bearer</code> token.<br>
             For example:<br>
             <code>Authorization=Bearer EAAjMFjiuIekBAG5QQattzBlLpZA...bAZDZD</code>
@@ -80,17 +80,17 @@
       },
       methods: {
         /**
-         * Cleans query param from possible existing `#` or `?`i tag at the
+         * Cleans query param from possible existing `#` or `?` tag at the
          * begining of the string.
          *
-         * Returns object { queryParamName: value }.
+         * Returns query param as object { queryParamName: value }.
          */
         cleanQueryParam: function(queryParam) {
           let tmp = undefined;
           let splitted = undefined;
           let result = {};
 
-          if (queryParam[0] == '#' || queryParam[0] == '?') {
+          if (queryParam[0] === '#' || queryParam[0] === '?') {
             tmp = queryParam.substring(1);
           } else {
             tmp = queryParam;

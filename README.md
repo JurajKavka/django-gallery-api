@@ -18,7 +18,7 @@ In project directory (where you see `docker-compose.yml`) run commad:
 ```shell
 docker-compose up
 ```
-Building the image takes quite a long time. When the container is running, local server is listening on port `8000` and app is accessible on [`http://localhost:8000`](http://localhost:8000).
+Building the image takes quite a long time. When the container is running, local server is listening on port `:80` and app is accessible on [`http://localhost:80`](http://localhost:80).
 
 ### Docker
 If you don't have `docker-compose`, you can use standard Docker command to build image and run container. Those commands are part of `Makefile`.
@@ -57,15 +57,17 @@ pipenv run python manage.py create_default_superuser --username admin --password
 Now, you need to run local development server with
 
 ```
-pipenv run python manage.py runserver
+pipenv run python manage.py runserver 80
 ```
 
-Try running app in browser on url [`http://localhost:8000/`](http://localhost:8000/).
+> **NOTE:** You need to have admin privilegies to start development server on port **:80**
+
+Try running app in browser on url [`http://localhost:80/`](http://localhost:80/).
 
 > **NOTE**: This project depends on `Pillow` library, which can be difficult to install for a first time, because `Pillow` depends on external packages which must be installed globally in your operating system. For more details, reffer [Pillow installation guide](https://pillow.readthedocs.io/en/stable/installation.html).
 
-### Testing the API
-On `http://localhost:8000/` is API schema with all the links and details. 
+## Testing the API
+On `http://localhost:80/` is API schema with all the links and details. 
 
 In a nutshell:
 
@@ -75,16 +77,41 @@ In a nutshell:
 
 You can also try those links from browser, for example:
 
-- `http://localhost:8000/gallery`
+- `http://localhost:80/gallery`
 
 Django REST framework will render its own views for those endpoints.
 
-> **NOTE: API endpoints are not authorized! Authentication and authorization is explicitely disabled for the simplicity of project presentation!**
+> **NOTE: API endpoints are not authorized! Authentication and authorization is explicitely disabled for the simplicity of project presentation! The only request, that is authorized is photo upload.**
 
-### Administration from backend (Django Admin)
-This Django project comes with prepopulated sqlite database in file `src/db.sqlite3`. This allows without any special effort run the project and use. You can administrace application from standard Django admin on url `http://localhost:8000/admin`. 
+## Administration from backend (Django Admin)
+This Django project comes with prepopulated sqlite database in file `src/db.sqlite3`. This allows without any special effort run the project and use. You can administrate application from standard Django admin on url `http://localhost:80/admin`. 
 
 Default superuser is:
 
 - name: `admin`
-- password:`admin123`
+- password:`admin`
+
+## Facebook authorization
+Request, for the photo upload is authentificated with Facebook OAuth API. All the settings are predefined in file [`/src/app/settings_fb.py`](/src/app/settings_fb.py). Default application ID belongs to *"Programator.sk"* Facebook App. Redirect URI is setted to `https://localhost/token`.
+
+> **NOTE**: Development server can't handle `https://` requests, so after redirect from Facebook API, url needs to be corrected to `http://` manually!
+
+### How to send request
+Request is authorized with `Bearer` token, which is part of `Authorization` HTTP header.
+
+Example:
+```
+Authorization=Bearer EAAO922hDT5UBAJVuZBMMeMZAmJCLZC6MUVLLxzVHwPDKPZAEac3ZBuYTIfy3B1v0wB5Jffhe1DNlaws5enNkWwjK3KmFxHA7I2zRa7ScNuzX1W9QbROyicwNzvGIdonMwchg7CJAtt3IPQqq0NosqK8aXnZAguQKliUGlO6vZCNDiyDpCSb8ym6sNrATqTqXlwZD
+```
+
+If the access token is not valid, server responds with `401 Unauthorized` and with `redirect_url` in body.  This url can be used for renew token or grant access from the Facebook API. 
+
+Example:
+```
+{
+  "detail": "Ivalid token",
+  "redirect_url": "https://www.facebook.com/v6.0/dialog/oauth?response_type=token&client_id=1053174974861205&redirect_uri=https%3A%2F%2Flocalhost%2Ftoken&state=jnSfZdMYQjeyzEnXyXxISsVgS1Xe6T"
+}
+```
+
+The backend server provides helper redirect url `http://localhost/token` (**NOT https://**). This [view](src/app/gallery/templates/gallery/facebook_redirect.html) parses response URL and prints **Access token** and few other details.
