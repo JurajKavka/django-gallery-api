@@ -22,5 +22,3 @@ rm:
 rm-image:
 	echo "Removing image from system"
 	docker image rm gallery_api:latest
-
-clean: rm rm-image

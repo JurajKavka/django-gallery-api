@@ -21,26 +21,36 @@ docker-compose up
 Building the image takes quite a long time. When the container is running, local server is listening on port `:80` and app is accessible on [`http://localhost:80`](http://localhost:80).
 
 ### Docker
-If you don't have `docker-compose`, you can use standard Docker command to build image and run container. Those commands are part of `Makefile`.
+If you don't have `docker-compose`, you can use standard Docker commands to build image and run container. Those commands are part of `Makefile`.
 
-```shell
+```bash
+# build image
 make build
-make run
-```
 
-Clean container and image with
-```shell
-make clean
+# run container based on builded image
+make run
+
+# stop running container
+make stop
+
+# start existing container
+make start
+
+# remove container
+make rm
+
+# remove image
+make rm-image
 ```
 
 ### The pure Python way (without Docker)
 To run this project without docker You will need to have installed:
 
-- python 3
-- [`pipenv`](https://github.com/pypa/pipenv)
-- sqlite 3
+- python v.3
+- [pipenv](https://github.com/pypa/pipenv)
+- sqlite v.3
 
-In `src/` subdirectory directory (where you see `Pipfile`) run command:
+In `src/` subdirectory (where you see `Pipfile`) run these commands:
 
 ```bash
 # install dependencies
@@ -52,7 +62,6 @@ pipenv run python manage.py migrate
 # create default admin user
 pipenv run python manage.py create_default_superuser --username admin --password admin
 ```
-
 
 Now, you need to run local development server with
 
@@ -84,7 +93,7 @@ You can also try those links from browser, for example:
 
 - `http://localhost:80/gallery`
 
-Django REST framework will render its own views for those endpoints.
+Django REST framework will render its own views for the endpoints.
 
 > **NOTE: API endpoints are not authorized! Authentication and authorization is explicitely disabled for the simplicity of project presentation! The only request, that is authorized is photo upload.**
 
