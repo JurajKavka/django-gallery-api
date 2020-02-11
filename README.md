@@ -71,9 +71,14 @@ On `http://localhost:80/` is API schema with all the links and details.
 
 In a nutshell:
 
-- `/gallery` - list of the galleries or create one, providing `name` in request body
-- `/gallery/{path}` - detail of the gallery with all the images. `POST` method to this endpoint is used to upload images to selected gallery. You can upload several images in one request. `DELETE` method deletes gallery with all the images and generated thumbnails. When you use `fullpath` of the image as a `path` parameter of this request, server returns original image. `DELETE` method combined with `fullpath` of the image removes image from gallery.
-- `images/{x_size}x{y_size}/{gallery_path}/{image_path}/` - returns resized image. Image is defined by `{gallery_path}/{image_path}`, but it is same as a `fullpath` attribude from the detail of image. The resizing method does not maintain aspect ratio, only when one of the `size` parameter is `0`.
+- **`/gallery`**
+    - list of the galleries or create one, providing `name` in request body
+- **`/gallery/{path}`**
+    - `GET` mothod returns detail of the gallery with all the images. When you use `fullpath` of the image as a `path` parameter of this request, server returns original image. 
+    - `POST` method to this endpoint is used to upload images to selected gallery. You can upload several images in one request. Uploading photos are authenticated with Facebook (see below).
+    - `DELETE` method deletes gallery with all the images and generated thumbnails. `DELETE` method combined with `fullpath` of the image removes image from gallery. 
+- **`images/{x_size}x{y_size}/{gallery_path}/{image_path}/`** 
+    - returns resized image. Image is defined by `{gallery_path}/{image_path}`, but it is same as a `fullpath` attribude from the detail of image. The resizing method does not maintain aspect ratio, only when one of the `size` parameter is `0`.
 
 You can also try those links from browser, for example:
 
@@ -92,7 +97,7 @@ Default superuser is:
 - password:`admin`
 
 ## Facebook authorization
-Request, for the photo upload is authentificated with Facebook OAuth API. All the settings are predefined in file [`/src/app/settings_fb.py`](/src/app/settings_fb.py). Default application ID belongs to *"Programator.sk"* Facebook App. Redirect URI is setted to `https://localhost/token`.
+Request, for the photo upload is authenticated with Facebook OAuth API. All the settings are predefined in file [`/src/app/settings_fb.py`](/src/app/settings_fb.py). Default application ID belongs to *"Programator.sk"* Facebook App. Redirect URI is setted to `https://localhost/token`.
 
 > **NOTE**: Development server can't handle `https://` requests, so after redirect from Facebook API, url needs to be corrected to `http://` manually!
 
