@@ -1,9 +1,10 @@
 from django.urls import path
+from rest_framework.schemas import get_schema_view
 from .api import (
     gallery_list_view, gallery_detail_view, image_detail_view,
     image_preview_view
 )
-from rest_framework.schemas import get_schema_view
+from .views import FacebookRedirectView
 
 app_name = 'gallery'
 
@@ -20,6 +21,12 @@ urlpatterns = [
     # Image preview (request for thumbnails): GET
     path('images/<int:x_size>x<int:y_size>/<str:gallery_path>/<str:image_path>/',
          image_preview_view),
+
+    # redirect from facebook auth api
+    path('token/',
+         FacebookRedirectView.as_view(
+             template_name='gallery/facebook_redirect.html'
+         )),
 
     path('', get_schema_view(
         title="Gallery API",

@@ -7,7 +7,7 @@ test:
 	echo ${PWD}/src:/app
 
 run:
-	docker run --name ${CONTAINER_NAME} -it -v ${PWD}/src/:/app/ -p 8000:8000 gallery_api:latest
+	docker run --name ${CONTAINER_NAME} -it -v ${PWD}/src/:/app/ -p 80:8000 gallery_api:latest
 
 start:
 	docker container start -i ${CONTAINER_NAME}
