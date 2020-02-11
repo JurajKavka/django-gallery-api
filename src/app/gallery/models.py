@@ -174,20 +174,46 @@ class Image(models.Model):
         """
         return '{}/{}'.format(self.gallery.path, self.path)
 
-    @classmethod
-    def create_from_file(cls, gallery, file):
+    @staticmethod
+    def create_from_file(gallery, file, fb_user):
         """
         Cretes `Image` instance from the file (Django `File` object). Parses
         and generates `name` and assigns image to gallery.
         """
-        name, extension = os.path.splitext(file.name)
-        image = cls(
-            gallery=gallery,
-            path=file.name,
-            name=name,
-            file=file
+        filename, extension = os.path.splitext(file.name)
+
+        # path composed from name, FB user ID and extension
+        new_filename = '{filename}-{fb_user_id}{extension}'.format(
+            filename=filename, 
+            fb_user_id=fb_user.fb_id,
+            extension=extension
         )
+
+        # change also filename of file object itself
+        file.name = new_filename 
+
+        # nice image name
+        nice_image_name = filename.capitalize()
+
+        image = {
+            'gallery': gallery.pk,
+            'path': new_filename,
+            'name': nice_image_name,
+            'file': file,
+        }
         return image
+
+    @staticmethod
+    def get_image_name(filename, fb_user_id):
+        """
+        Returns file name composed from original file name and
+        id of the facebook user
+        """
+        filename, extension = os.path.splitext(filename)
+        return '{filename}-{fb_user_id}{extension}'.format(
+            filename=filename, 
+            fb_user_id=fb_user_id,
+            extension=extension)
 
     def _get_image_directory(self):
         """

@@ -1,10 +1,8 @@
 import logging
-import os
 from django.http import FileResponse
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import api_view, authentication_classes, \
+    permission_classes
 from rest_framework.exceptions import APIException, NotFound
 from rest_framework.response import Response
 from ..models import Gallery, Image
@@ -45,8 +43,8 @@ def get_image(gallery_path, image_path):
 
 
 @api_view(['GET', 'POST'])
-@authentication_classes([SimpleFbAuthentication])
-@permission_classes([IsFbAuthenticated])
+@authentication_classes([])
+@permission_classes([])
 def gallery_list_view(request):
 
     if request.method == 'GET':
@@ -56,6 +54,7 @@ def gallery_list_view(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
+        logger.debug(request.user)
         serializer = GallerySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -67,8 +66,8 @@ def gallery_list_view(request):
 
 
 @api_view(['GET', 'DELETE', 'POST'])
-@authentication_classes([])
-@permission_classes([])
+@authentication_classes([SimpleFbAuthentication])
+@permission_classes([IsFbAuthenticated])
 def gallery_detail_view(request, path):
 
     if request.method == 'GET':
@@ -92,12 +91,7 @@ def gallery_detail_view(request, path):
 
         try:
             for key, val in request.FILES.items():
-                image = {
-                    'gallery': gallery.pk,
-                    'path': val.name,
-                    'name': os.path.splitext(val.name)[0],
-                    'file': val,
-                }
+                image = Image.create_from_file(gallery, val, request.user)
                 serializer = ImageUploadSerializer(data=image)
                 if serializer.is_valid():
                     img = serializer.save()
@@ -114,7 +108,8 @@ def gallery_detail_view(request, path):
                     })
 
             return Response(success_response, status=status.HTTP_200_OK)
-        except Exception:
+        except Exception as e:
+            logger.error(e)
             raise APIException()
 
     elif request.method == 'DELETE':

@@ -1,5 +1,7 @@
 import logging
 import requests
+from django.db import models
+from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
 from oauthlib.oauth2 import MobileApplicationClient
 from rest_framework.authentication import TokenAuthentication
@@ -11,11 +13,25 @@ from .. import settings as app_settings
 
 
 logger = logging.getLogger(__name__)
+User = get_user_model()
 
+
+class FbUser(User):
+    fb_id = models.CharField(_('FB ID'), max_length=200)
+    fb_name = models.CharField(_('FB Name'), max_length=2000)
+
+    class Meta:
+        abstract = True
 
 class SimpleFbAuthentication(TokenAuthentication):
 
     keyword = 'Bearer'
+
+    def authenticate(self, request):
+        if request.method != 'POST':
+            return (None, None)
+        else:
+            return super(SimpleFbAuthentication, self).authenticate(request)
 
     def authenticate_credentials(self, key):
         logger.debug('Key: {} {}'.format(self.keyword, key))
@@ -75,26 +91,20 @@ class SimpleFbAuthentication(TokenAuthentication):
                     _('Authentication failed.')
                 )
 
-        logger.debug(response.json())
+        resp_json = response.json()
 
-        return (response.json(), key)
+        user = FbUser(fb_name=resp_json['name'], fb_id=resp_json['id'])
 
-    def authenticate(self, request):
-        logger.debug('authenticate')
-        try:
-            result = super(SimpleFbAuthentication, self).authenticate(request)
-        except Exception as e:
-            logger.debug(e)
-            raise e
-        return result
+        return (user, key)
 
 
 class IsFbAuthenticated(BasePermission):
 
     def has_permission(self, request, view):
-        logger.debug(request.user)
+        if request.method != 'POST':
+            return True
 
-        if request.user and request.user.get('id') is not None:
+        if type(request.user) == FbUser and request.user.fb_id is not None:
             return True
         else:
             return False
