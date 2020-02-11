@@ -10,13 +10,16 @@ from .serializers import (
     GallerySerializer, GalleryDetailSerializer, ImageUploadSerializer,
     ImagePreviewSerializer
 )
-from .simple_fb_auth import SimpleFbAuthentication, IsFbAuthenticated
+from .simple_fb_auth import SimpleFacebookAuthentication, IsFacebookAuthenticated
 
 
 logger = logging.getLogger(__name__)
 
 
 def get_gallery(path):
+    """
+    Selects `gallery` from database based on its `path` attribute.
+    """
     gallery = None
     try:
         gallery = Gallery.objects.get(name=path)
@@ -29,6 +32,10 @@ def get_gallery(path):
 
 
 def get_image(gallery_path, image_path):
+    """
+    Selects `image` from database based on its `gallery_path` and `image_path`
+    attributes.
+    """
     image = None
     try:
         image = Image.objects.get(gallery__name=gallery_path,
@@ -46,9 +53,14 @@ def get_image(gallery_path, image_path):
 @authentication_classes([])
 @permission_classes([])
 def gallery_list_view(request):
+    """
+    Gallery list entrypoint.
 
+    - `GET` method selects all the galleries from database. Part of retrieved
+    gallery objects is one of gallery image as a preview.
+    - `POST` creates new gallery. Name of the gallery must be unique.
+    """
     if request.method == 'GET':
-        logger.debug('loggggg')
         galleries = Gallery.objects.all()
         serializer = GallerySerializer(galleries, many=True)
         return Response(serializer.data)
@@ -66,10 +78,18 @@ def gallery_list_view(request):
 
 
 @api_view(['GET', 'DELETE', 'POST'])
-@authentication_classes([SimpleFbAuthentication])
-@permission_classes([IsFbAuthenticated])
+@authentication_classes([SimpleFacebookAuthentication])
+@permission_classes([IsFacebookAuthenticated])
 def gallery_detail_view(request, path):
+    """
+    Gallery detail entrypoint.
 
+    - `GET` method selects gallery detail based on `path` attribute of gallery.
+    Returned object includes all of the images, belongs to selected gallery.
+    - `POST` method is used for uploading images to selected gallery. It is
+    possible to upload more than one image.
+    - `DELETE` method deletes selected gallery with all the images.
+    """
     if request.method == 'GET':
         gallery = get_gallery(path)
         serializer = GalleryDetailSerializer(gallery)
@@ -122,7 +142,13 @@ def gallery_detail_view(request, path):
 @authentication_classes([])
 @permission_classes([])
 def image_detail_view(request, gallery_path, image_path):
+    """
+    Image detail entrypoint.
 
+    - `GET` method returns image detail from database. Searchig is based on
+    `gallery_path` and `image_path` attributes.
+    - `DELETE` method deletes image from gallery.
+    """
     if request.method == 'GET':
         logger.debug('GET Image {}/{}'.format(gallery_path, image_path))
         image = get_image(gallery_path, image_path)
@@ -137,8 +163,16 @@ def image_detail_view(request, gallery_path, image_path):
 
 
 @api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])
 def image_preview_view(request, x_size, y_size, gallery_path, image_path):
+    """
+    Image preview (thumbnail) entrypoint.
 
+    - `GET` method returns image thumbnail with `x_size` and `y_size`. If one
+    of size values is zero, resizing method preserves ratio. Image selection
+    is based on `gallery_path` and `image_path` attributes.
+    """
     if request.method == 'GET':
         logger.debug(('GET Image preview x={x_size}, y={y_size}, path={gallery_path}/{image_path}'
                       .format(x_size=x_size, y_size=y_size, gallery_path=gallery_path,
